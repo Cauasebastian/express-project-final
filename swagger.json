@@ -1,0 +1,75 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "title": "API REST Grupo 7",
+      "version": "1.0.0",
+      "description": "Documentação da API do projeto de integração com banco de dados e endpoints para gerenciar times, usuários, tarefas e projetos."
+    },
+    "servers": [
+      {
+        "url": "http://localhost:3000/api",
+        "description": "Servidor de Desenvolvimento"
+      }
+    ],
+    "paths": {
+      "/users": {
+        "get": {
+          "summary": "Lista todos os usuários",
+          "tags": ["Users"],
+          "responses": {
+            "200": {
+              "description": "Lista de usuários",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "post": {
+          "summary": "Cria um novo usuário",
+          "tags": ["Users"],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "Usuário criado com sucesso"
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "User": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            },
+            "password": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+  
