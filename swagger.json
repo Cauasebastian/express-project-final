@@ -1,75 +1,578 @@
 {
-    "openapi": "3.0.0",
-    "info": {
-      "title": "API REST Grupo 7",
-      "version": "1.0.0",
-      "description": "Documentação da API do projeto de integração com banco de dados e endpoints para gerenciar times, usuários, tarefas e projetos."
-    },
-    "servers": [
-      {
-        "url": "http://localhost:3000/api",
-        "description": "Servidor de Desenvolvimento"
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API REST Grupo 7",
+    "version": "1.0.0",
+    "description": "Documentação para a API que gerencia usuários, times, tarefas, projetos e suas associações."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/api",
+      "description": "Servidor de Desenvolvimento"
+    }
+  ],
+  "paths": {
+    "/users": {
+      "get": {
+        "summary": "Lista todos os usuários",
+        "tags": ["Users"],
+        "responses": {
+          "200": {
+            "description": "Lista de usuários",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/User" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Cria um novo usuário",
+        "tags": ["Users"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/User" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuário criado com sucesso"
+          }
+        }
       }
-    ],
-    "paths": {
-      "/users": {
-        "get": {
-          "summary": "Lista todos os usuários",
-          "tags": ["Users"],
-          "responses": {
-            "200": {
-              "description": "Lista de usuários",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/User"
-                    }
+    },
+    "/users/{id}": {
+      "put": {
+        "summary": "Atualiza um usuário",
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID do usuário",
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/User" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuário atualizado com sucesso"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Deleta um usuário",
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID do usuário",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuário deletado com sucesso"
+          }
+        }
+      }
+    },
+    "/teams": {
+      "get": {
+        "summary": "Lista todos os times",
+        "tags": ["Teams"],
+        "responses": {
+          "200": {
+            "description": "Lista de times",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Team" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Cria um novo time",
+        "tags": ["Teams"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Team" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Time criado com sucesso"
+          }
+        }
+      }
+    },
+    "/teams/{teamId}/add-user": {
+      "post": {
+        "summary": "Adiciona um usuário a um time",
+        "tags": ["Teams"],
+        "parameters": [
+          {
+            "name": "teamId",
+            "in": "path",
+            "required": true,
+            "description": "ID do time",
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "userId": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuário adicionado ao time com sucesso"
+          }
+        }
+      }
+    },
+    "/teams/{teamId}/remove-user/{userId}": {
+       "delete": {  
+        "summary": "Remove um usuário de um time",
+        "tags": ["Teams"],
+        "parameters": [
+          {
+            "name": "teamId",
+            "in": "path",
+            "required": true,
+            "description": "ID do time",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "description": "ID do usuário",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuário removido do time com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" },
+                    "team": { "$ref": "#/components/schemas/Team" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Time ou usuário não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+    "/projects": {
+      "get": {
+        "summary": "Lista todos os projetos",
+        "tags": ["Projects"],
+        "responses": {
+          "200": {
+            "description": "Lista de projetos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Project" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Cria um novo projeto",
+        "tags": ["Projects"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Project" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Projeto criado com sucesso"
+          }
+        }
+      }
+    },
+    "/tasks": {
+      "get": {
+        "summary": "Lista todas as tarefas",
+        "tags": ["Tasks"],
+        "responses": {
+          "200": {
+            "description": "Lista de tarefas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Task" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Cria uma nova tarefa",
+        "tags": ["Tasks"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Task" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Tarefa criada com sucesso"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "email": { "type": "string" },
+          "password": { "type": "string" },
+          "teams": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      },
+      "Team": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "members": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      },
+      "Project": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "category": { "type": "string" },
+          "team": { "type": "string" },
+          "Tasks": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      },
+      "Task": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "status": { "type": "string", "enum": ["To Do", "In Progress", "Done"] },
+          "project": { "type": "string" },
+          "comments": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    }
+  },
+  "/tasks": {
+      "get": {
+        "summary": "Lista todas as tarefas",
+        "tags": ["Tasks"],
+        "responses": {
+          "200": {
+            "description": "Lista de tarefas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Task" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Cria uma nova tarefa",
+        "tags": ["Tasks"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Task" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Tarefa criada com sucesso"
+          }
+        }
+      }
+    },
+    "/tasks/{id}": {
+      "patch": {
+        "summary": "Atualiza o status de uma tarefa",
+        "tags": ["Tasks"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID da tarefa",
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": ["To Do", "In Progress", "Done"]
                   }
                 }
               }
             }
           }
         },
+        "responses": {
+          "200": {
+            "description": "Status da tarefa atualizado com sucesso"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Deleta uma tarefa",
+        "tags": ["Tasks"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID da tarefa",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tarefa deletada com sucesso"
+          }
+        }
+      }
+    },
+    "/projects": {
+      "get": {
+        "summary": "Lista todos os projetos",
+        "tags": ["Projects"],
+        "responses": {
+          "200": {
+            "description": "Lista de projetos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Project" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Cria um novo projeto",
+        "tags": ["Projects"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Project" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Projeto criado com sucesso"
+          }
+        }
+      }
+    },
+      "/projects/{projectId}/assign-team": {
         "post": {
-          "summary": "Cria um novo usuário",
-          "tags": ["Users"],
+          "summary": "Associa um time a um projeto",
+          "tags": ["Projects"],
+          "parameters": [
+            {
+              "name": "projectId",
+              "in": "path",
+              "required": true,
+              "description": "ID do projeto",
+              "schema": { "type": "string" }
+            }
+          ],
           "requestBody": {
             "required": true,
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/User"
+                  "type": "object",
+                  "properties": {
+                    "teamId": { "type": "string" }
+                  }
                 }
               }
             }
           },
           "responses": {
-            "201": {
-              "description": "Usuário criado com sucesso"
+            "200": {
+              "description": "Time associado ao projeto com sucesso"
             }
           }
         }
       }
     },
-    "components": {
-      "schemas": {
-        "User": {
-          "type": "object",
-          "properties": {
-            "name": {
-              "type": "string"
-            },
-            "email": {
-              "type": "string"
-            },
-            "password": {
-              "type": "string"
-            }
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "email": { "type": "string" },
+          "password": { "type": "string" },
+          "teams": {
+            "type": "array",
+            "items": { "type": "string" }
           }
+        }
+      },
+      "Team": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "members": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      },
+      "Project": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "category": { "type": "string" },
+          "team": { "type": "string" },
+          "Tasks": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      },
+      "Task": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "status": { "type": "string", "enum": ["To Do", "In Progress", "Done"] },
+          "project": { "type": "string" },
+          "comments": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      },
+      "Role": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "user": { "type": "string" },
+          "team": { "type": "string" }
+        }
+      },
+      "Comment": {
+        "type": "object",
+        "properties": {
+          "content": { "type": "string" },
+          "user": { "type": "string" },
+          "task": { "type": "string" }
+        }
+      },
+      "Category": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" }
         }
       }
     }
   }
-  
+}
+
+
+

@@ -13,7 +13,10 @@ const createProject = async (req, res) => {
 
 const getProjects = async (req, res) => {
   try {
-    const projects = await Project.find().populate("team", "name").populate("category", "name");
+    const projects = await Project.find()
+      .populate("team", "name")
+      .populate("category", "name")
+      .populate("Tasks", "title status"); // Listar as tarefas do projeto
     res.status(200).json(projects);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -26,7 +29,9 @@ const assignTeamToProject = async (req, res) => {
   try {
     const project = await Project.findById(projectId);
     const team = await Team.findById(teamId);
-    if (!project || !team) return res.status(404).json({ message: "Project or Team not found" });
+    if (!project || !team) {
+      return res.status(404).json({ message: "Project or Team not found" });
+    }
 
     project.team = teamId;
     await project.save();

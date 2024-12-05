@@ -41,16 +41,17 @@ const addUserToTeam = async (req, res) => {
 };
 
 const removeUserFromTeam = async (req, res) => {
-  const { teamId } = req.params;
-  const { userId } = req.body;
+  const { teamId, userId } = req.params; // userId agora é passado pela URL
   try {
     const team = await Team.findById(teamId);
     const user = await User.findById(userId);
     if (!team || !user) return res.status(404).json({ message: "Team or User not found" });
 
+    // Remove o usuário do time
     team.members.pull(userId);
     await team.save();
 
+    // Remove o time da lista de times do usuário
     user.teams.pull(teamId);
     await user.save();
 
