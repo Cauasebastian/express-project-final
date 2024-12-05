@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "API REST Grupo 7",
+    "title": "API REST Grupo Procesy",
     "version": "1.0.0",
     "description": "Documentação para a API que gerencia usuários, times, tarefas, projetos e suas associações."
   },
@@ -496,8 +496,100 @@
             }
           }
         }
+      }, 
+      "/projects/{projectId}/add-task": {
+        "post": {
+          "summary": "Adiciona uma tarefa a um projeto",
+          "tags": ["Projects"],
+          "parameters": [
+            {
+              "name": "projectId",
+              "in": "path",
+              "required": true,
+              "description": "ID do projeto",
+              "schema": { "type": "string" }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "taskId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Tarefa adicionada ao projeto com sucesso"
+            }
+          }
+        }
+      },
+      "/projects/{projectId}/remove-task/": {
+        "delete": {
+          "summary": "Remove uma tarefa de um projeto",
+          "tags": ["Projects"],
+          "parameters": [
+            {
+              "name": "projectId",
+              "in": "path",
+              "required": true,
+              "description": "ID do projeto",
+              "schema": { "type": "string" }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "taskId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Tarefa removida do projeto com sucesso",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": { "type": "string" },
+                      "project": { "$ref": "#/components/schemas/Project" }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Projeto ou tarefa não encontrado",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
-    },
+
+    }, 
+
   "components": {
     "schemas": {
       "User": {

@@ -5,19 +5,17 @@ const createTask = async (req, res) => {
   try {
     const { projectId, ...taskData } = req.body;
 
-    // Verificar se o projeto existe
-    const project = await Project.findById(projectId);
-    if (!project) {
-      return res.status(404).json({ message: "Project not found" });
-    }
-
-    // Criar a tarefa
-    const task = new Task({ ...taskData, project: projectId });
+    const task = new Task({ ...taskData, project: projectId || null });
     await task.save();
 
-    // Associar a tarefa ao projeto
-    project.Tasks.push(task._id);
-    await project.save();
+    if (projectId) {
+      const project = await Project.findById(projectId);
+      if (!project) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+      project.tasks.push(task._id);
+      await project.save();
+    }
 
     res.status(201).json(task);
   } catch (error) {

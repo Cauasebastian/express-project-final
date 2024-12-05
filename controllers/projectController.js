@@ -16,7 +16,7 @@ const getProjects = async (req, res) => {
     const projects = await Project.find()
       .populate("team", "name")
       .populate("category", "name")
-      .populate("Tasks", "title status"); // Listar as tarefas do projeto
+      .populate("Task", "title status"); // Listar as tarefas do projeto
     res.status(200).json(projects);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -41,5 +41,60 @@ const assignTeamToProject = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+const addTaskToProject = async (req, res) => {
+  const { projectId } = req.params;
+  const { taskId } = req.body;
 
-module.exports = { createProject, getProjects, assignTeamToProject };
+  try {
+    const project = await Project.findById(projectId);
+    const task = await Task.findById(taskId);
+
+    if (!project || !task) {
+      return res.status(404).json({ message: "Project or Task not found" });
+    }
+
+    task.project = projectId;
+    await task.save();
+
+    if (!project.tasks.includes(taskId)) {
+      project.tasks.push(taskId);
+      await project.save();
+    }
+
+    res.status(200).json({ message: "Task added to project successfully", project });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const removeTaskFromProject = async (req, res) => {
+  const { projectId } = req.params;
+  const { taskId } = req.body;
+
+  try {
+    const project = await Project.findById(projectId);
+    const task = await Task.findById(taskId);
+
+    if (!project || !task) {
+      return res.status(404).json({ message: "Project or Task not found" });
+    }
+
+    task.project = null;
+    await task.save();
+
+    project.tasks = project.tasks.filter((id) => id.toString() !== taskId);
+    await project.save();
+
+    res.status(200).json({ message: "Task removed from project successfully", project });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+module.exports = { 
+  createProject, 
+  getProjects, 
+  assignTeamToProject, 
+  addTaskToProject, 
+  removeTaskFromProject 
+};
