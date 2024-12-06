@@ -315,7 +315,6 @@
         "properties": {
           "name": { "type": "string" },
           "description": { "type": "string" },
-          "category": { "type": "string" },
           "team": { "type": "string" },
           "Tasks": {
             "type": "array",
@@ -496,7 +495,65 @@
             }
           }
         }
-      }, 
+      },
+      "/projects/{projectId}/remove-team": {
+        "delete": {
+          "summary": "Desassocia um time de um projeto",
+          "tags": ["Projects"],
+          "parameters": [
+            {
+              "name": "projectId",
+              "in": "path",
+              "required": true,
+              "description": "ID do projeto",
+              "schema": { "type": "string" }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "teamId": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Time desassociado do projeto com sucesso",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": { "type": "string" },
+                      "project": { "$ref": "#/components/schemas/Project" }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Projeto ou time não encontrado",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+
       "/projects/{projectId}/add-task": {
         "post": {
           "summary": "Adiciona uma tarefa a um projeto",
@@ -619,7 +676,6 @@
         "properties": {
           "name": { "type": "string" },
           "description": { "type": "string" },
-          "category": { "type": "string" },
           "team": { "type": "string" },
           "Tasks": {
             "type": "array",
@@ -654,12 +710,6 @@
           "content": { "type": "string" },
           "user": { "type": "string" },
           "task": { "type": "string" }
-        }
-      },
-      "Category": {
-        "type": "object",
-        "properties": {
-          "name": { "type": "string" }
         }
       }
     }
